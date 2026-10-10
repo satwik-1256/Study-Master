@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks | Study Master{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <span class="eyebrow">STAY ORGANIZED</span>
+
+    <h1>My Tasks</h1>
+
+    <p>Organize your learning goals and assignments.</p>
+
+</div>
+
+
+<div class="task-form-card">
+
+    <h2>Add New Task</h2>
+
+    <form method="POST" class="task-form">
+
+        <input
+            type="text"
+            name="title"
+            placeholder="What do you need to do?"
+            required
+        >
+
+        <select name="priority">
+
+            <option value="Low">Low Priority</option>
+
+            <option value="Medium" selected>Medium Priority</option>
+
+            <option value="High">High Priority</option>
+
+        </select>
+
+        <input type="date" name="due_date">
+
+        <button type="submit" class="primary-button">
+            + Add Task
+        </button>
+
+    </form>
+
+</div>
+
+
+<div class="task-list">
+
+    {% for task in tasks %}
+
+        <div class="task-row {% if task.completed %}task-completed{% endif %}">
+
+            <form
+                method="POST"
+                action="{{ url_for('toggle_task', task_id=task.id) }}"
+            >
+
+                <button type="submit" class="check-button">
+
+                    {% if task.completed %}
+                        ✓
+                    {% else %}
+                        ○
+                    {% endif %}
+
+                </button>
+
+            </form>
+
+
+            <div class="task-details">
+
+                <strong>{{ task.title }}</strong>
+
+                <small>
+
+                    <span class="priority {{ task.priority|lower }}">
+                        {{ task.priority }}
+                    </span>
+
+                    {% if task.due_date %}
+                        · Due {{ task.due_date }}
+                    {% endif %}
+
+                    {% if task.completed %}
+                        · Completed
+                    {% endif %}
+
+                </small>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('delete_task', task_id=task.id) }}"
+                onsubmit="return confirm('Delete this task?')"
+            >
+
+                <button type="submit" class="delete-button">
+                    ×
+                </button>
+
+            </form>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+            No tasks yet. Add your first learning task!
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

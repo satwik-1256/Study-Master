@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Study Master{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+
+    <span class="eyebrow">YOUR ACCOUNT</span>
+
+    <h1>My Profile</h1>
+
+</div>
+
+
+<div class="profile-card">
+
+    <div class="profile-avatar">
+        {{ current_user.name[0]|upper }}
+    </div>
+
+    <h2>{{ current_user.name }}</h2>
+
+    <p>{{ current_user.email }}</p>
+
+    <span class="student-badge">STUDY MASTER STUDENT</span>
+
+    <a href="{{ url_for('settings') }}" class="continue-button">
+        Edit Profile →
+    </a>
+
+</div>
+
+
+<div class="profile-stats">
+
+    <div>
+        <strong>{{ completed }}</strong>
+        <span>Lessons Completed</span>
+    </div>
+
+    <div>
+        <strong>{{ courses_count }}</strong>
+        <span>Available Courses</span>
+    </div>
+
+</div>
+
+{% endblock %}

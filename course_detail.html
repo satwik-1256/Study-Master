@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} | Study Master{% endblock %}
+
+{% block content %}
+
+<style>
+    .sm-detail-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px 18px 48px;
+        color: var(--text-color, #172033);
+    }
+
+    .sm-back-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .sm-back-link:hover {
+        text-decoration: underline;
+    }
+
+    .sm-detail-hero {
+        padding: 30px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+        margin-bottom: 22px;
+    }
+
+    .sm-detail-icon {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+    }
+
+    .sm-detail-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        margin: 0 0 10px;
+        color: #172554;
+    }
+
+    .sm-detail-hero p {
+        line-height: 1.65;
+        color: #475569;
+        max-width: 760px;
+    }
+
+    .sm-detail-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 16px 0;
+    }
+
+    .sm-detail-tag {
+        font-size: 0.85rem;
+        background: #fff;
+        color: #334155;
+        border-radius: 999px;
+        padding: 7px 12px;
+    }
+
+    .sm-detail-progress {
+        background: #fff;
+        border-radius: 16px;
+        padding: 18px;
+        margin-top: 20px;
+    }
+
+    .sm-detail-progress-info {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .sm-detail-progress-line {
+        height: 9px;
+        background: #e2e8f0;
+        border-radius: 99px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .sm-detail-progress-line span {
+        display: block;
+        width: var(--progress-width, 0%);
+        height: 100%;
+        background: #6366f1;
+        border-radius: inherit;
+        transition: width 0.3s ease;
+    }
+
+    .sm-lessons-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 28px 0 15px;
+    }
+
+    .sm-lessons-heading h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .sm-lessons-heading p {
+        margin: 4px 0 0;
+        color: #64748b;
+    }
+
+    .sm-lesson-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .sm-lesson-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: var(--card-bg, #fff);
+    }
+
+    .sm-lesson-number {
+        flex: 0 0 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: #eef2ff;
+        color: #4338ca;
+        font-weight: 800;
+    }
+
+    .sm-lesson-copy {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sm-lesson-copy h3 {
+        font-size: 1.02rem;
+        margin: 0 0 5px;
+    }
+
+    .sm-lesson-copy p {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.45;
+    }
+
+    .sm-lesson-link {
+        white-space: nowrap;
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: #4f46e5;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .sm-lesson-link:hover {
+        background: #4338ca;
+    }
+
+    .sm-no-lessons {
+        padding: 22px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        color: #64748b;
+    }
+
+    .sm-detail-card {
+        margin-top: 26px;
+        padding: 22px;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: var(--card-bg, #fff);
+    }
+
+    .sm-detail-card h2 {
+        margin-top: 0;
+    }
+
+    .sm-review-field {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin: 8px 0 12px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font: inherit;
+    }
+
+    .sm-review-item {
+        padding: 12px 0;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .sm-review-item p {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 600px) {
+        .sm-detail-page {
+            padding: 18px 12px 36px;
+        }
+
+        .sm-detail-hero {
+            padding: 22px;
+        }
+
+        .sm-lesson-item {
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .sm-lesson-copy {
+            flex-basis: calc(100% - 60px);
+        }
+
+        .sm-lesson-link {
+            margin-left: 57px;
+        }
+
+        .sm-detail-progress-info {
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="sm-detail-page">
+
+    <a class="sm-back-link" href="{{ url_for('courses') }}">
+        ← Back to all courses
+    </a>
+
+    <!-- Course Overview -->
+    <section class="sm-detail-hero">
+
+        <div class="sm-detail-icon">
+            {{ course.icon|default('📚') }}
+        </div>
+
+        <h1>{{ course.title }}</h1>
+
+        <p>{{ course.description }}</p>
+
+        <div class="sm-detail-tags">
+
+            <span class="sm-detail-tag">
+                📂 {{ course.category|default('General') }}
+            </span>
+
+            <span class="sm-detail-tag">
+                🎯 {{ course.level|default('Beginner') }}
+            </span>
+
+            <span class="sm-detail-tag">
+                📖 {{ course.lessons|length }} lessons
+            </span>
+
+        </div>
+
+        <!-- Course Progress -->
+        <div class="sm-detail-progress">
+
+            <div class="sm-detail-progress-info">
+                <strong>Your course progress</strong>
+
+                <strong>{{ progress|default(0) }}%</strong>
+            </div>
+
+            <div
+                class="sm-detail-progress-line"
+                role="progressbar"
+                aria-valuenow="{{ progress|default(0) }}"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-label="Course progress"
+                style="--progress-width: {{ progress|default(0) }}%;"
+            >
+                <span></span>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Course Curriculum -->
+    <section>
+
+        <div class="sm-lessons-heading">
+
+            <div>
+                <h2>Course curriculum</h2>
+
+                <p>
+                    Choose a lesson to start learning.
+                    Your progress is tracked as you complete lessons.
+                </p>
+            </div>
+
+            <strong>
+                {{ course.lessons|length }} total lessons
+            </strong>
+
+        </div>
+
+        <div class="sm-lesson-list">
+
+            {% for lesson in course.lessons|sort(attribute='lesson_number') %}
+
+                <article class="sm-lesson-item">
+
+                    <div class="sm-lesson-number">
+                        {{ lesson.lesson_number }}
+                    </div>
+
+                    <div class="sm-lesson-copy">
+
+                        <h3>{{ lesson.title }}</h3>
+
+                        <p>
+                            Lesson {{ lesson.lesson_number }}
+                            · Part of {{ course.title }}
+                        </p>
+
+                    </div>
+
+                    <a
+                        class="sm-lesson-link"
+                        href="{{ url_for('lesson', lesson_id=lesson.id) }}"
+                    >
+                        Open lesson →
+                    </a>
+
+                </article>
+
+            {% else %}
+
+                <div class="sm-no-lessons">
+                    Lessons for this course have not been added yet.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <!-- Course Certificate -->
+    <section class="sm-detail-card">
+
+        <h2>🎓 Course certificate</h2>
+
+        {% if certificate_ready %}
+
+            <p>
+                Congratulations! You have completed every lesson.
+                Your course certificate is ready.
+            </p>
+
+            <a
+                class="sm-lesson-link"
+                href="{{ url_for('course_certificate', course_id=course.id) }}"
+            >
+                View certificate →
+            </a>
+
+        {% else %}
+
+            <p>
+                Complete all lessons to unlock your course certificate.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+    <!-- Ratings and Reviews -->
+    <section class="sm-detail-card">
+
+        <h2>⭐ Ratings &amp; reviews</h2>
+
+        <p>
+            {% if average_rating is not none %}
+
+                Average rating:
+                <strong>{{ average_rating }}/5</strong>
+                from {{ reviews|length }} review(s).
+
+            {% else %}
+
+                No ratings yet. Be the first to review this course.
+
+            {% endif %}
+        </p>
+
+        <form
+            method="post"
+            action="{{ url_for('submit_review', course_id=course.id) }}"
+        >
+
+            <label for="rating">Your rating</label>
+
+            <select
+                id="rating"
+                name="rating"
+                class="sm-review-field"
+                required
+            >
+
+                <option value="">Choose stars</option>
+
+                {% for n in range(5, 0, -1) %}
+
+                    <option
+                        value="{{ n }}"
+                        {% if my_review and my_review.rating == n %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ n }} star{{ '' if n == 1 else 's' }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+            <label for="comment">Review (optional)</label>
+
+            <textarea
+                id="comment"
+                name="comment"
+                class="sm-review-field"
+                maxlength="2000"
+                rows="3"
+            >{{ my_review.comment if my_review else '' }}</textarea>
+
+            <button class="sm-lesson-link" type="submit">
+                {{ 'Update review' if my_review else 'Submit review' }}
+            </button>
+
+        </form>
+
+        <!-- Existing Reviews -->
+        {% for review in reviews %}
+
+            <article class="sm-review-item">
+
+                <strong>{{ review.user.name }}</strong>
+
+                ·
+
+                <span aria-label="{{ review.rating }} out of 5 stars">
+
+                    {{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}
+
+                </span>
+
+                <p>
+                    {{ review.comment or 'No written comment.' }}
+                </p>
+
+            </article>
+
+        {% else %}
+
+            <p>No reviews have been submitted yet.</p>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+{% endblock %}

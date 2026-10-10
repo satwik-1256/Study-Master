@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} | Study Master{% endblock %}
+{% block content %}
+<style>
+.sm-wrap{max-width:980px;margin:28px auto;padding:0 18px 50px;color:var(--text-color,#172033)}.sm-hero{padding:26px;border-radius:20px;background:linear-gradient(135deg,#eef2ff,#e0f2fe);margin-bottom:20px}.sm-hero h1{margin:8px 0;color:#172554}.sm-card{background:var(--card-bg,#fff);border:1px solid #e2e8f0;border-radius:17px;padding:22px;margin:16px 0}.sm-body{white-space:pre-wrap;line-height:1.85;overflow-wrap:anywhere}.sm-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.sm-btn{border:0;border-radius:10px;padding:11px 15px;background:#4f46e5;color:white;text-decoration:none;font-weight:700;cursor:pointer}.sm-btn.alt{background:#eef2ff;color:#4338ca}.sm-field{width:100%;box-sizing:border-box;padding:11px;border:1px solid #cbd5e1;border-radius:9px;margin:6px 0 12px}.sm-note{padding:12px;border:1px solid #e2e8f0;border-radius:10px;margin:10px 0;white-space:pre-wrap}.sm-muted{color:#64748b}
+</style>
+<div class="sm-wrap">
+<a href="{{ url_for('course_detail', course_id=lesson.course_id) }}">← Back to {{ lesson.course.title }}</a>
+<header class="sm-hero"><div>{{ lesson.course.title }} · Lesson {{ lesson.lesson_number }}</div><h1>{{ lesson.title }}</h1><p>Read the explanation, study the example, try the exercise, and save your own notes.</p></header>
+<article class="sm-card"><h2>Lesson content</h2><div class="sm-body">{{ lesson.content or 'Lesson content has not been added yet.' }}</div></article>
+<div class="sm-actions">
+{% if completed %}<span class="sm-btn" style="background:#15803d">✓ Completed</span>{% else %}<form method="post" action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}"><button class="sm-btn" type="submit">✓ Mark as complete</button></form>{% endif %}
+<a class="sm-btn alt" href="{{ url_for('lesson_quiz', lesson_id=lesson.id) }}">🧠 Take quiz</a>
+<form method="post" action="{{ url_for('toggle_bookmark', lesson_id=lesson.id) }}"><button class="sm-btn alt" type="submit">{% if bookmarked %}★ Remove bookmark{% else %}☆ Bookmark lesson{% endif %}</button></form>
+</div>
+<section class="sm-card"><h2>My notes</h2><p class="sm-muted">Notes are private to your account.</p><form method="post" action="{{ url_for('save_note', lesson_id=lesson.id) }}"><label for="note-content">Add a note</label><textarea class="sm-field" id="note-content" name="content" rows="4" maxlength="10000" required placeholder="Write key ideas, reminders, or questions..."></textarea><button class="sm-btn" type="submit">Save note</button></form>
+{% for note in notes %}<div class="sm-note"><small class="sm-muted">Updated {{ note.updated_at.strftime('%d %b %Y, %H:%M') }}</small><p>{{ note.content }}</p><form method="post" action="{{ url_for('delete_note', note_id=note.id) }}"><button class="sm-btn alt" type="submit">Delete note</button></form></div>{% else %}<p class="sm-muted">You haven't saved notes for this lesson yet.</p>{% endfor %}</section>
+</div>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Study Master{% endblock %}
+
+{% block content %}
+
+<div class="welcome">
+
+    <div>
+
+        <span class="eyebrow">YOUR LEARNING SPACE</span>
+
+        <h1>Welcome back, {{ current_user.name }} 👋</h1>
+
+        <p>Keep learning, growing, and achieving your goals.</p>
+
+    </div>
+
+    <a href="{{ url_for('courses') }}" class="primary-button">
+        Explore Courses →
+    </a>
+
+</div>
+
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">📚</div>
+
+        <div>
+            <span>Available Courses</span>
+            <strong>{{ total_courses }}</strong>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">✓</div>
+
+        <div>
+            <span>Lessons Completed</span>
+            <strong>{{ completed_lessons }}</strong>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">🔥</div>
+
+        <div>
+            <span>Study Streak</span>
+            <strong>—</strong>
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">◉</div>
+
+        <div>
+            <span>Overall Progress</span>
+            <strong>{{ overall_progress }}%</strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="section-heading">
+
+    <div>
+        <span class="eyebrow">KEEP GOING</span>
+        <h2>Continue Learning</h2>
+    </div>
+
+    <a href="{{ url_for('courses') }}">View All →</a>
+
+</div>
+
+
+<div class="course-grid">
+
+    {% for course in courses %}
+
+        <article class="course-card">
+
+            <div class="course-icon">{{ course.icon }}</div>
+
+            <span class="category">{{ course.category }}</span>
+
+            <h3>{{ course.title }}</h3>
+
+            <p>{{ course.description }}</p>
+
+            <div class="progress-info">
+
+                <span>{{ get_course_progress(course.id) }}% Complete</span>
+
+                <span>{{ course.lessons|length }} Lessons</span>
+
+            </div>
+
+            <div class="progress-bar">
+
+               <div style="width: {{ get_course_progress(course.id) }}%;"></div>
+
+            </div>
+
+            {% set next_lesson = get_next_lesson(course) %}
+
+            {% if next_lesson %}
+
+                <a
+                    href="{{ url_for('lesson', lesson_id=next_lesson.id) }}"
+                    class="continue-button"
+                >
+                    Continue Learning →
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for('course_detail', course_id=course.id) }}"
+                    class="continue-button"
+                >
+                    Review Course →
+                </a>
+
+            {% endif %}
+
+        </article>
+
+    {% endfor %}
+
+</div>
+
+
+<div class="section-heading">
+
+    <div>
+        <span class="eyebrow">STAY ORGANIZED</span>
+        <h2>Pending Tasks</h2>
+    </div>
+
+    <a href="{{ url_for('tasks') }}">Manage Tasks →</a>
+
+</div>
+
+
+<div class="task-preview">
+
+    {% for task in tasks %}
+
+        <div class="task-row">
+
+            <div>
+                <strong>{{ task.title }}</strong>
+
+                <small>
+                    {{ task.priority }} priority
+                    {% if task.due_date %}
+                        · Due {{ task.due_date }}
+                    {% endif %}
+                </small>
+            </div>
+
+            <form method="POST" action="{{ url_for('toggle_task', task_id=task.id) }}">
+
+                <button type="submit" class="check-button">
+                    ✓
+                </button>
+
+            </form>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">No pending tasks. Enjoy your progress! 🎉</div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
